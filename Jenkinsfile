@@ -337,7 +337,7 @@ deploy = input message: 'Waiting for user approval',
 parameters: [choice(name: 'Continue and deploy?', choices: 'No\nYes', description: 'Choose "Yes" if you want to deploy this build')]
 
                         stage ('code quality'){
-                            sh '''$(npm bin)/ng lint'''
+                           // sh '''$(npm bin)/ng lint'''
                         }
 
 deploy = input message: 'Waiting for user approval',
