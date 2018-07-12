@@ -330,29 +330,29 @@ parameters: [choice(name: 'Continue and deploy?', choices: 'No\nYes', descriptio
 
 
                         stage ('test') {
-                            sh "$(npm bin)/ng test --single-run --browsers Chrome_no_sandbox"
+                            sh ''''$(npm bin)/ng test --single-run --browsers Chrome_no_sandbox'''
                         }
 
 deploy = input message: 'Waiting for user approval',
 parameters: [choice(name: 'Continue and deploy?', choices: 'No\nYes', description: 'Choose "Yes" if you want to deploy this build')]
 
                         stage ('code quality'){
-                            sh '$(npm bin)/ng lint'
+                            sh '''$(npm bin)/ng lint'''
                         }
 
 deploy = input message: 'Waiting for user approval',
 parameters: [choice(name: 'Continue and deploy?', choices: 'No\nYes', description: 'Choose "Yes" if you want to deploy this build')]
 
                         stage ('build') {
-                            sh ""$(npm bin)/ng build --prod --build-optimizer"
+                            sh ''''$(npm bin)/ng build --prod --build-optimizer'''
                         }
 
 deploy = input message: 'Waiting for user approval',
 parameters: [choice(name: 'Continue and deploy?', choices: 'No\nYes', description: 'Choose "Yes" if you want to deploy this build')]
 
                         stage ('build image') {
-                            sh "rm -rf node_modules"
-                            sh "oc start-build angular-5-example --from-dir=. --follow"
+                            sh 'rm -rf node_modules'
+                            sh 'oc start-build angular-5-example --from-dir=. --follow'
                          }
                     }
                 }
