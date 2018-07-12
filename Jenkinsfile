@@ -7,11 +7,11 @@ def runNodejsPPCJenkinsfile() {
 
     def utils = new NodejsUtils()
 
-    //def npmRepositoryURL = 'http://10.6.14.20:8080/artifactory/api/npm/npm-repo/'
-    //def npmLocalRepositoryURL = 'http://10.6.14.20:8080/artifactory/api/npm/npm-local/'
+    def npmRepositoryURL = 'https://digitalservices.evobanco.com/artifactory/api/npm/npm-repo/'
+    def npmLocalRepositoryURL = 'https://digitalservices.evobanco.com/artifactory/api/npm/npm-local/'
 
-    def npmRepositoryURL = 'http://10.6.13.5:8081/artifactory/api/npm/npm-repo/'
-    def npmLocalRepositoryURL = 'http://10.6.13.5:8081/artifactory/api/npm/npm-local/'
+    //def npmRepositoryURL = 'http://10.6.13.5:8081/artifactory/api/npm/npm-repo/'
+    //def npmLocalRepositoryURL = 'http://10.6.13.5:8081/artifactory/api/npm/npm-local/'
 
     def openshiftURL = 'https://openshift.grupoevo.corp:8443'
     def openshiftCredential = 'openshift'
@@ -91,7 +91,7 @@ def runNodejsPPCJenkinsfile() {
 
     echo "BEGIN NODE.JS PARALLEL CONFIGURATION PROJECT (PPC)"
 
-    node('nodejs') {
+    node('nodejs8') {
 
         stage('Checkout') {
             echo 'Getting source code... parallel project pipeline'
@@ -300,10 +300,8 @@ def runNodejsPPCJenkinsfile() {
 
                     if (branchName != 'master') {
 
-                        stage('Build') {
+                        stage('install modules') {
 
-                            //echo 'Get NPM config registry'
-                            //sh 'npm config get registry'
 
 
                             try {
@@ -312,6 +310,8 @@ def runNodejsPPCJenkinsfile() {
                                 echo "NPM_AUTH_EMAIL: ${ARTIFACTORY_NPM_EMAIL_AUTH}"
                                 echo 'Building dependencies...'
                                 sh 'npm i'
+
+                                 sh 'npm install --save classlist.js'
                             } catch (exc) {
                                     def deploy = input message: 'Waiting for user approval',
                                     parameters: [choice(name: 'Continue and deploy?', choices: 'No\nYes', description: 'Choose "Yes" if you want to deploy this build')]
@@ -326,6 +326,22 @@ def runNodejsPPCJenkinsfile() {
                         }
 
 
+
+                        stage ('test') {
+                            sh "$(npm bin)/ng test --single-run --browsers Chrome_no_sandbox"
+                        }
+
+                        stage ('code quality'){
+                            sh '$(npm bin)/ng lint'
+                        }
+
+                        stage ('build') {
+                            sh ""$(npm bin)/ng build --prod --build-optimizer"
+                        }
+                        stage ('build image') {
+                            sh "rm -rf node_modules"
+                            sh "oc start-build angular-5-example --from-dir=. --follow"
+                         }
                     }
                 }
             }
