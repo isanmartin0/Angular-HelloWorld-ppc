@@ -9,7 +9,7 @@ debugPort: 5858
 useNpmMirror: false
 npmMirror: https://registry.npmjs.org/
 useAlternateNpmRun: true
-alternateNpmRunScript: script_prueba
+alternateNpmRunScript: build
 
 ports:
   useSpecificPort: true
